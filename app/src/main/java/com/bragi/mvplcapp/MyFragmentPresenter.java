@@ -2,24 +2,17 @@ package com.bragi.mvplcapp;
 
 import android.support.annotation.NonNull;
 
-import com.bragi.mvplc.components.MvplcFragment;
-import com.bragi.mvplc.components.MvplcPresenter;
+class MyFragmentPresenter implements MyContract.Presenter {
 
-@SuppressWarnings("WeakerAccess")
-public class MyFragmentPresenter implements MvplcPresenter {
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private MyFragment fragment;
+    private @NonNull MyContract.View view;
 
     @Override
-    public void start(@NonNull MvplcFragment fragment) {
-        this.fragment = (MyFragment)fragment;
-        this.fragment.writeHello();
+    public void start() {
+
     }
 
     @Override
     public void stop() {
-
+        // Nothing to do
     }
-
 }

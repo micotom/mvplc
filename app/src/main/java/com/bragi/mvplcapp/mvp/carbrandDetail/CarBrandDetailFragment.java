@@ -1,6 +1,7 @@
 package com.bragi.mvplcapp.mvp.carbrandDetail;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,24 +11,23 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.bragi.mvplc.components.BaseContract;
 import com.bragi.mvplc.components.BaseContractFragment;
 import com.bragi.mvplcapp.R;
-import com.bragi.mvplcapp.mvp.carbrands.CarBrandListDisplayModel;
 import com.bragi.mvplcapp.utils.Injector;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailContract.Presenter>
-        implements CarBrandDetailContract.View {
+public class CarBrandDetailFragment extends BaseContractFragment implements CarBrandDetailContract.View {
 
-    private static final String ARG_CARBRAND_LIST_MODEL = "carbrand_list_model";
+    private static final String ARG_SELECTED_CARBRAND_ID = "selected_carbrand_id";
 
-    public static CarBrandDetailFragment getInstance(CarBrandListDisplayModel carBrandListDisplayModel) {
+    public static CarBrandDetailFragment getInstance(long carBrandId) {
         CarBrandDetailFragment fragment = new CarBrandDetailFragment();
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ARG_CARBRAND_LIST_MODEL, carBrandListDisplayModel);
+        arguments.putLong(ARG_SELECTED_CARBRAND_ID, carBrandId);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -45,10 +45,16 @@ public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailC
 
     private CarBrandDetailContract.Presenter presenter;
 
+    @NonNull
+    @Override
+    protected BaseContract.Presenter getPresenter() {
+        return presenter;
+    }
+
     @Override
     protected void onFragmentCreated(Bundle savedInstanceState) {
         super.onFragmentCreated(savedInstanceState);
-        new CarBrandDetailPresenter(getArguments().getParcelable(ARG_CARBRAND_LIST_MODEL),
+        presenter = new CarBrandDetailPresenter(getArguments().getLong(ARG_SELECTED_CARBRAND_ID, -1),
                 this, Injector.INSTANCE.provideDataStore());
     }
 
@@ -74,29 +80,8 @@ public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailC
 
     @Override
     public void setCarBrand(CarBrandDetailDisplayModel carBrand) {
-        setTitle(carBrand.name);
         countryOriginTextView.setText(carBrand.countryName);
         founderNamesTextView.setText(carBrand.foundersNames);
         Picasso.with(getContext()).load(carBrand.logoImageUrl).placeholder(R.drawable.loading_placeholder).into(logoImageView);
-    }
-
-    @Override
-    public void setCarBrandName(String carBrandName) {
-        setTitle(carBrandName);
-    }
-
-    @Override
-    public void setPresenter(CarBrandDetailContract.Presenter presenter) {
-        super.setPresenter(presenter);
-        this.presenter = presenter;
-    }
-
-    private void setTitle(@Nullable String title) {
-        if (getActivity() != null) {
-            getActivity().setTitle(
-                    title == null ?
-                    getResources().getString(R.string.title_activity_car_brand_detail) :
-                    title);
-        }
     }
 }

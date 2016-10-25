@@ -2,6 +2,7 @@ package com.bragi.mvplc.components;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
+import android.support.annotation.NonNull;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -39,9 +40,9 @@ public class FragmentLifecycleDelegateTest {
 
         view.onCreateView(null, null, null);
         assertEquals(FragmentLifecycleDelegate.VIEW_CREATED, component.status);
-        assertEquals(FragmentLifecycleDelegate.STARTED, presenter.status);
 
         view.onStart();
+        assertEquals(FragmentLifecycleDelegate.STARTED, presenter.status);
         assertEquals(FragmentLifecycleDelegate.STARTED, component.status);
 
         view.onResume();
@@ -52,10 +53,10 @@ public class FragmentLifecycleDelegateTest {
 
         view.onStop();
         assertEquals(FragmentLifecycleDelegate.STOPPED, component.status);
+        assertEquals(FragmentLifecycleDelegate.STOPPED, presenter.status);
 
         view.onDestroyView();
         assertEquals(FragmentLifecycleDelegate.VIEW_DESTROYED, component.status);
-        assertEquals(FragmentLifecycleDelegate.STOPPED, presenter.status);
 
         view.onDestroy();
         assertEquals(FragmentLifecycleDelegate.DESTROYED, component.status);
@@ -64,9 +65,18 @@ public class FragmentLifecycleDelegateTest {
     }
 
     @SuppressLint("ValidFragment")
-    private static class BaseContractFragmentImpl extends BaseContractFragment<MvplcPresenterImpl>
-            implements BaseContract.View<MvplcPresenterImpl> {
+    private static class BaseContractFragmentImpl extends BaseContractFragment {
+        private BaseContract.Presenter presenter;
 
+        void setPresenter(BaseContract.Presenter presenter) {
+            this.presenter = presenter;
+        }
+
+        @NonNull
+        @Override
+        protected BaseContract.Presenter getPresenter() {
+            return presenter;
+        }
     }
 
     private static class FragmentLifecycleDelegateImpl extends FragmentLifecycleDelegate {

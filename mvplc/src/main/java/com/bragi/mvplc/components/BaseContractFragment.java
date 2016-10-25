@@ -1,7 +1,7 @@
 package com.bragi.mvplc.components;
 
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,9 +11,8 @@ import android.view.ViewGroup;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public abstract class BaseContractFragment<P extends BaseContract.Presenter> extends Fragment implements BaseContract.View<P> {
+public abstract class BaseContractFragment extends Fragment implements BaseContract.View {
     private final Subject<Integer, Integer> lifecycleSubject = PublishSubject.create();
-    private P presenter;
 
     @Override
     public final void onCreate (Bundle savedInstanceState) {
@@ -37,7 +36,7 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
     public final void onStart() {
         super.onStart();
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STARTED);
-        presenter.onStart();
+        getPresenter().onStart();
         onFragmentStarted();
     }
 
@@ -60,7 +59,7 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
     @Override
     public final void onStop() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STOPPED);
-        presenter.onStop();
+        getPresenter().onStop();
         onFragmentStopped();
         super.onStop();
     }
@@ -86,11 +85,8 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
 
     // Methods available for override by children
 
-    @Override
-    @CallSuper
-    public void setPresenter(P presenter) {
-        this.presenter = presenter;
-    }
+    @NonNull
+    protected abstract BaseContract.Presenter getPresenter();
 
     // Optional methods
     protected void onFragmentCreated(Bundle savedInstanceState) { /* default implementation */ }

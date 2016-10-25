@@ -4,8 +4,8 @@ import com.bragi.mvplc.components.BaseContract;
 
 import java.util.List;
 
-public interface CarBrandsContract {
-    interface View extends BaseContract.View<Presenter> {
+interface CarBrandsContract {
+    interface View extends BaseContract.View {
         void showProgress();
         void hideProgress();
         void setCarBrands(List<CarBrandListDisplayModel> carBrands);

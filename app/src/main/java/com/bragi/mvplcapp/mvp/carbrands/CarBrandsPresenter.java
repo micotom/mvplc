@@ -20,11 +20,10 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
     @Nullable
     private Subscription dataStoreSubscription;
 
-    public CarBrandsPresenter(CarBrandsContract.View view, DataStore dataStore, Navigator navigator) {
+    CarBrandsPresenter(CarBrandsContract.View view, DataStore dataStore, Navigator navigator) {
         this.view = view;
         this.dataStore = dataStore;
         this.navigator = navigator;
-        view.setPresenter(this);
     }
 
     @Override
@@ -44,7 +43,7 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
 
     @Override
     public void carBrandClicked(CarBrandListDisplayModel displayModel) {
-        navigator.navigateToCarbrandDetail(displayModel);
+        navigator.navigateToCarbrandDetail(displayModel.id);
     }
 
     private void reload() {

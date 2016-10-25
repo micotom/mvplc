@@ -4,30 +4,27 @@ import android.support.annotation.Nullable;
 
 import com.bragi.mvplcapp.data.DataStore;
 import com.bragi.mvplcapp.data.entities.CarBrand;
-import com.bragi.mvplcapp.mvp.carbrands.CarBrandListDisplayModel;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter {
-    private final CarBrandListDisplayModel carBrandListDisplayModel;
+class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter {
+    private final long carBrandId;
     private CarBrandDetailContract.View view;
     private final DataStore dataStore;
 
     @Nullable
     private Subscription dataStoreSubscription;
 
-    public CarBrandDetailPresenter(CarBrandListDisplayModel carBrandListDisplayModel,
-                                   CarBrandDetailContract.View view, DataStore dataStore) {
-        this.carBrandListDisplayModel = carBrandListDisplayModel;
+    CarBrandDetailPresenter(long carBrandId,
+                            CarBrandDetailContract.View view, DataStore dataStore) {
+        this.carBrandId = carBrandId;
         this.view = view;
         this.dataStore = dataStore;
-        view.setPresenter(this);
     }
 
     @Override
     public void onStart() {
-        view.setCarBrandName(carBrandListDisplayModel.name);
         reload();
     }
 
@@ -40,7 +37,7 @@ public class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter
         view.showProgress();
 
         if (dataStoreSubscription == null) {
-            dataStoreSubscription = dataStore.requestCarBrand(carBrandListDisplayModel.id)
+            dataStoreSubscription = dataStore.requestCarBrand(carBrandId)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::foundCarBrandDetail);
         }

@@ -1,6 +1,7 @@
 package com.bragi.mvplcapp.mvp.carbrands;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.bragi.mvplc.components.BaseContract;
 import com.bragi.mvplc.components.BaseContractFragment;
 import com.bragi.mvplcapp.R;
 import com.bragi.mvplcapp.utils.Injector;
@@ -20,9 +22,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Presenter>
-        implements CarBrandsContract.View, AdapterView.OnItemClickListener,
-        SwipeRefreshLayout.OnRefreshListener {
+public class CarBrandsFragment extends BaseContractFragment implements CarBrandsContract.View,
+        AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.listView)
     ListView listView;
@@ -35,7 +36,7 @@ public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Pr
     private ArrayAdapter<CarBrandListDisplayModel> adapter;
 
     public CarBrandsFragment() {
-        new CarBrandsPresenter(this, Injector.INSTANCE.provideDataStore(),
+        presenter = new CarBrandsPresenter(this, Injector.INSTANCE.provideDataStore(),
                 Injector.INSTANCE.provideNavigator());
     }
 
@@ -78,10 +79,10 @@ public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Pr
         adapter.clear();
     }
 
+    @NonNull
     @Override
-    public void setPresenter(CarBrandsContract.Presenter presenter) {
-        super.setPresenter(presenter);
-        this.presenter = presenter;
+    protected BaseContract.Presenter getPresenter() {
+        return presenter;
     }
 
     @Override

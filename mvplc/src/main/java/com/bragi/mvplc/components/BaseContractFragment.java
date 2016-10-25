@@ -29,8 +29,9 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
                                     Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_CREATED);
+        View fragmentView = onCreateFragmentView(inflater, container, savedInstanceState);
         presenter.start();
-        return onCreateFragmentView(inflater, container, savedInstanceState);
+        return fragmentView;
     }
 
 

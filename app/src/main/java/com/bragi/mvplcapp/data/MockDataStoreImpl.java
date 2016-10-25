@@ -21,34 +21,31 @@ public class MockDataStoreImpl implements DataStore {
 
     private static final long FILTER_ID_NONE = -1;
 
-    private long filterCarBrandId = FILTER_ID_NONE;
-
     // DataStore
     @Override
     public Observable<List<CarBrand>> requestCarBrands() {
-        filterCarBrandId = FILTER_ID_NONE;
-        return Observable.defer(() -> Observable.just(slowLoadCarbrands()))
+        return Observable.defer(() -> Observable.just(slowLoadCarbrands(FILTER_ID_NONE)))
                 .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Observable<List<CarBrand>> requestCarBrand(long id) {
+    public Observable<CarBrand> requestCarBrand(final long id) {
         if (id < 0) {
             throw new InvalidParameterException("Invalid negative CarBrand id: " + id);
         }
-        filterCarBrandId = id;
-        return Observable.defer(() -> Observable.just(slowLoadCarbrands()))
+        return Observable.defer(() -> Observable.just(slowLoadCarbrands(id)))
+                .map(list -> (list.size() > 0 ? list.get(0) : null))
                 .subscribeOn(Schedulers.io());
     }
 
     // Simulated slow data loading
 
     @WorkerThread
-    private List<CarBrand> slowLoadCarbrands() {
+    private List<CarBrand> slowLoadCarbrands(final long carBrandId) {
         List<CarBrand> resultSet = lazyInitStoredCarBrands();
 
-        if(filterCarBrandId != FILTER_ID_NONE) {
-            resultSet = filterId(filterCarBrandId, resultSet);
+        if(carBrandId != FILTER_ID_NONE) {
+            resultSet = filterId(carBrandId, resultSet);
         }
 
         try {

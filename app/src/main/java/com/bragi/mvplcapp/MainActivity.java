@@ -19,4 +19,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Injector.INSTANCE.provideNavigator().setActivity(null);
     }
+
+    @Override
+    public void onBackPressed() {
+        Injector.INSTANCE.provideNavigator().navigateBack();
+    }
 }

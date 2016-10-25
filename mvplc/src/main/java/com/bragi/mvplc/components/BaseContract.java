@@ -7,7 +7,7 @@ public interface BaseContract {
     }
 
     interface Presenter {
-        void start();
-        void stop();
+        void onStart();
+        void onStop();
     }
 }

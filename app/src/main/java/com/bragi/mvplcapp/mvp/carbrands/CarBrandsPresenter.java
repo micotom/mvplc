@@ -27,21 +27,24 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
         view.setPresenter(this);
     }
 
-    // CarBrandsPresenterInput
-
     @Override
-    public void start() {
+    public void onStart() {
         reload();
     }
 
     @Override
-    public void stop() {
+    public void onStop() {
         cleanupSubscription();
     }
 
     @Override
     public void refreshRequested() {
         reload();
+    }
+
+    @Override
+    public void carBrandClicked(CarBrandListDisplayModel displayModel) {
+        navigator.navigateToCarbrandDetail(displayModel);
     }
 
     private void reload() {
@@ -53,11 +56,6 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::foundCarBrands);
         }
-    }
-
-    @Override
-    public void carBrandClicked(CarBrandListDisplayModel displayModel) {
-        navigator.navigateToCarbrandDetail(displayModel);
     }
 
     private void foundCarBrands(List<CarBrand> carBrands) {

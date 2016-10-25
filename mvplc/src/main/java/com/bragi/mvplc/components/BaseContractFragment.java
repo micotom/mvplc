@@ -29,9 +29,7 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
                                     Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_CREATED);
-        View fragmentView = onCreateFragmentView(inflater, container, savedInstanceState);
-        presenter.start();
-        return fragmentView;
+        return onCreateFragmentView(inflater, container, savedInstanceState);
     }
 
 
@@ -39,6 +37,7 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
     public final void onStart() {
         super.onStart();
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STARTED);
+        presenter.onStart();
         onFragmentStarted();
     }
 
@@ -61,6 +60,7 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
     @Override
     public final void onStop() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STOPPED);
+        presenter.onStop();
         onFragmentStopped();
         super.onStop();
     }
@@ -68,7 +68,6 @@ public abstract class BaseContractFragment<P extends BaseContract.Presenter> ext
     @Override
     public final void onDestroyView() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_DESTROYED);
-        presenter.stop();
         onFragmentViewDestroyed();
         super.onDestroyView();
     }

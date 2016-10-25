@@ -15,5 +15,5 @@ import rx.Observable;
  */
 public interface DataStore {
     Observable<List<CarBrand>> requestCarBrands();
-    Observable<List<CarBrand>> requestCarBrand(long id);
+    Observable<CarBrand> requestCarBrand(long id);
 }

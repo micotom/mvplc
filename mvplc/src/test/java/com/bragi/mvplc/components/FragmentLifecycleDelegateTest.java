@@ -112,12 +112,12 @@ public class FragmentLifecycleDelegateTest {
         public MvplcPresenterImpl(){};
 
         @Override
-        public void start() {
+        public void onStart() {
             status = FragmentLifecycleDelegate.STARTED;
         }
 
         @Override
-        public void stop() {
+        public void onStop() {
             status = FragmentLifecycleDelegate.STOPPED;
         }
     }

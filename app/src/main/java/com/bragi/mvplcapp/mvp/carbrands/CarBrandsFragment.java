@@ -20,8 +20,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Presenter> implements CarBrandsContract.View,
-        AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Presenter>
+        implements CarBrandsContract.View, AdapterView.OnItemClickListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.listView)
     ListView listView;
@@ -34,7 +35,7 @@ public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.Pr
     private ArrayAdapter<CarBrandListDisplayModel> adapter;
 
     public CarBrandsFragment() {
-        this.presenter = new CarBrandsPresenter(this, Injector.INSTANCE.provideDataStore(),
+        new CarBrandsPresenter(this, Injector.INSTANCE.provideDataStore(),
                 Injector.INSTANCE.provideNavigator());
     }
 

@@ -9,6 +9,6 @@ interface CarBrandDetailContract {
         void setCarBrand(CarBrandDetailDisplayModel carBrand);
     }
 
-    interface Presenter extends BaseContract.Presenter {
+    interface Presenter extends BaseContract.Presenter<View> {
     }
 }

@@ -4,8 +4,8 @@ public interface BaseContract {
 
     interface View {}
 
-    interface Presenter {
-        void onStart();
+    interface Presenter<V extends View> {
+        void onStart(V view);
         void onStop();
     }
 }

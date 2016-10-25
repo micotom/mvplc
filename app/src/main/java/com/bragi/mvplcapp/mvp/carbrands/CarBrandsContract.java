@@ -12,7 +12,7 @@ interface CarBrandsContract {
         void clearCarBrands();
     }
 
-    interface Presenter extends BaseContract.Presenter {
+    interface Presenter extends BaseContract.Presenter<View> {
         void refreshRequested();
         void carBrandClicked(CarBrandListDisplayModel displayModel);
     }

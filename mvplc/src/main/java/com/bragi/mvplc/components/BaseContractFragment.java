@@ -4,15 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public abstract class BaseContractFragment extends Fragment implements BaseContract.View {
+public abstract class BaseContractFragment<V extends BaseContract.View, P extends BaseContract.Presenter<V>>
+        extends Fragment implements BaseContract.View {
+
     private final Subject<Integer, Integer> lifecycleSubject = PublishSubject.create();
+    private P basePresenter;
 
     @Override
     public final void onCreate (Bundle savedInstanceState) {
@@ -22,21 +23,18 @@ public abstract class BaseContractFragment extends Fragment implements BaseContr
     }
 
     @Override
-    @Nullable
-    public final View onCreateView (LayoutInflater inflater,
-                                    ViewGroup container,
-                                    Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+    public final void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_CREATED);
-        return onCreateFragmentView(inflater, container, savedInstanceState);
+        onFragmentViewCreated(view, savedInstanceState);
+        basePresenter = createPresenter();
+        basePresenter.onStart((V) this);
     }
-
 
     @Override
     public final void onStart() {
         super.onStart();
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STARTED);
-        getPresenter().onStart();
         onFragmentStarted();
     }
 
@@ -59,7 +57,6 @@ public abstract class BaseContractFragment extends Fragment implements BaseContr
     @Override
     public final void onStop() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.STOPPED);
-        getPresenter().onStop();
         onFragmentStopped();
         super.onStop();
     }
@@ -67,6 +64,8 @@ public abstract class BaseContractFragment extends Fragment implements BaseContr
     @Override
     public final void onDestroyView() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_DESTROYED);
+        basePresenter.onStop();
+        basePresenter = null;
         onFragmentViewDestroyed();
         super.onDestroyView();
     }
@@ -85,18 +84,13 @@ public abstract class BaseContractFragment extends Fragment implements BaseContr
 
     // Methods available for override by children
 
+    // Mandatory
     @NonNull
-    protected abstract BaseContract.Presenter getPresenter();
+    protected abstract P createPresenter();
 
     // Optional methods
     protected void onFragmentCreated(Bundle savedInstanceState) { /* default implementation */ }
-    @Nullable
-    protected View onCreateFragmentView(LayoutInflater inflater,
-                                              ViewGroup container,
-                                              Bundle savedInstanceState) {
-        /* default implementation */
-        return null;
-    }
+    protected void onFragmentViewCreated(View view, @Nullable Bundle savedInstanceState) { /* default implementation */ }
     protected void onFragmentStarted() { /* default implementation */ }
     protected void onFragmentResumed() { /* default implementation */ }
     protected void onFragmentPaused() { /* default implementation */ }

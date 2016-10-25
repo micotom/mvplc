@@ -10,21 +10,21 @@ import rx.android.schedulers.AndroidSchedulers;
 
 class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter {
     private final long carBrandId;
-    private CarBrandDetailContract.View view;
     private final DataStore dataStore;
+
+    private CarBrandDetailContract.View view;
 
     @Nullable
     private Subscription dataStoreSubscription;
 
-    CarBrandDetailPresenter(long carBrandId,
-                            CarBrandDetailContract.View view, DataStore dataStore) {
+    CarBrandDetailPresenter(long carBrandId, DataStore dataStore) {
         this.carBrandId = carBrandId;
-        this.view = view;
         this.dataStore = dataStore;
     }
 
     @Override
-    public void onStart() {
+    public void onStart(CarBrandDetailContract.View view) {
+        this.view = view;
         reload();
     }
 

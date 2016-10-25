@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.bragi.mvplc.components.BaseContract;
 import com.bragi.mvplc.components.BaseContractFragment;
 import com.bragi.mvplcapp.R;
 import com.bragi.mvplcapp.utils.Injector;
@@ -22,8 +21,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandsFragment extends BaseContractFragment implements CarBrandsContract.View,
-        AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class CarBrandsFragment extends BaseContractFragment<CarBrandsContract.View, CarBrandsContract.Presenter>
+        implements CarBrandsContract.View, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.listView)
     ListView listView;
@@ -35,27 +34,21 @@ public class CarBrandsFragment extends BaseContractFragment implements CarBrands
     private CarBrandsContract.Presenter presenter;
     private ArrayAdapter<CarBrandListDisplayModel> adapter;
 
-    public CarBrandsFragment() {
-        presenter = new CarBrandsPresenter(this, Injector.INSTANCE.provideDataStore(),
-                Injector.INSTANCE.provideNavigator());
-    }
-
     @Nullable
     @Override
-    protected View onCreateFragmentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_car_brands, container, false);
         ButterKnife.bind(this, rootView);
-        adapter = new ArrayAdapter<>(container.getContext(), android.R.layout.simple_list_item_1);
+        adapter = new ArrayAdapter<>(inflater.getContext(), android.R.layout.simple_list_item_1);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         swipeRefreshContainer.setOnRefreshListener(this);
         return rootView;
     }
 
-
     @Override
     public void showProgress() {
-        if(!swipeRefreshContainer.isRefreshing()) {
+        if (!swipeRefreshContainer.isRefreshing()) {
             progressBar.setVisibility(View.VISIBLE);
             listView.setVisibility(View.INVISIBLE);
         }
@@ -79,12 +72,6 @@ public class CarBrandsFragment extends BaseContractFragment implements CarBrands
         adapter.clear();
     }
 
-    @NonNull
-    @Override
-    protected BaseContract.Presenter getPresenter() {
-        return presenter;
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         presenter.carBrandClicked(adapter.getItem(position));
@@ -93,5 +80,13 @@ public class CarBrandsFragment extends BaseContractFragment implements CarBrands
     @Override
     public void onRefresh() {
         presenter.refreshRequested();
+    }
+
+    @NonNull
+    @Override
+    protected CarBrandsContract.Presenter createPresenter() {
+        presenter = new CarBrandsPresenter(Injector.INSTANCE.provideDataStore(),
+                Injector.INSTANCE.provideNavigator());
+        return presenter;
     }
 }

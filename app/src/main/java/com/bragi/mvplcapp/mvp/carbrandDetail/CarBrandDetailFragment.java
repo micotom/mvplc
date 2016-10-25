@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.bragi.mvplc.components.BaseContract;
 import com.bragi.mvplc.components.BaseContractFragment;
 import com.bragi.mvplcapp.R;
 import com.bragi.mvplcapp.utils.Injector;
@@ -20,7 +19,8 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandDetailFragment extends BaseContractFragment implements CarBrandDetailContract.View {
+public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailContract.View, CarBrandDetailContract.Presenter>
+        implements CarBrandDetailContract.View {
 
     private static final String ARG_SELECTED_CARBRAND_ID = "selected_carbrand_id";
 
@@ -43,24 +43,16 @@ public class CarBrandDetailFragment extends BaseContractFragment implements CarB
     @BindView(R.id.contentScrollView)
     ScrollView contentScrollView;
 
-    private CarBrandDetailContract.Presenter presenter;
-
     @NonNull
     @Override
-    protected BaseContract.Presenter getPresenter() {
-        return presenter;
-    }
-
-    @Override
-    protected void onFragmentCreated(Bundle savedInstanceState) {
-        super.onFragmentCreated(savedInstanceState);
-        presenter = new CarBrandDetailPresenter(getArguments().getLong(ARG_SELECTED_CARBRAND_ID, -1),
-                this, Injector.INSTANCE.provideDataStore());
+    protected CarBrandDetailContract.Presenter createPresenter() {
+        return new CarBrandDetailPresenter(getArguments().getLong(ARG_SELECTED_CARBRAND_ID, -1),
+                Injector.INSTANCE.provideDataStore());
     }
 
     @Nullable
     @Override
-    protected View onCreateFragmentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_car_brand_detail, container, false);
         ButterKnife.bind(this, rootView);
         return rootView;

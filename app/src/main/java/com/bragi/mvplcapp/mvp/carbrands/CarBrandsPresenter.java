@@ -13,21 +13,22 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 class CarBrandsPresenter implements CarBrandsContract.Presenter {
-    private final CarBrandsContract.View view;
     private final DataStore dataStore;
     private final Navigator navigator;
+
+    private CarBrandsContract.View view;
 
     @Nullable
     private Subscription dataStoreSubscription;
 
-    CarBrandsPresenter(CarBrandsContract.View view, DataStore dataStore, Navigator navigator) {
-        this.view = view;
+    CarBrandsPresenter(DataStore dataStore, Navigator navigator) {
         this.dataStore = dataStore;
         this.navigator = navigator;
     }
 
     @Override
-    public void onStart() {
+    public void onStart(CarBrandsContract.View view) {
+        this.view = view;
         reload();
     }
 

@@ -15,7 +15,7 @@ public class FragmentLifecycleDelegateTest {
 
     @Test
     public void testLifecycle() {
-        BaseContractFragmentImpl view = new BaseContractFragmentImpl();
+        VpFragmentImpl view = new VpFragmentImpl();
 
         // fake a loader manager so that onStart and onDestroy do not crash
         try {
@@ -33,16 +33,16 @@ public class FragmentLifecycleDelegateTest {
         MvplcPresenterImpl presenter = new MvplcPresenterImpl();
         FragmentLifecycleDelegateImpl component = new FragmentLifecycleDelegateImpl();
         view.setPresenter(presenter);
-        view.attachLifecycleComponent(component);
+        view.attachLifecycleDelegate(component);
 
         view.onCreate(null);
         assertEquals(FragmentLifecycleDelegate.CREATED, component.status);
 
-        view.onCreateView(null, null, null);
+        view.onViewCreated(null, null);
         assertEquals(FragmentLifecycleDelegate.VIEW_CREATED, component.status);
+        assertEquals(FragmentLifecycleDelegate.STARTED, presenter.status);
 
         view.onStart();
-        assertEquals(FragmentLifecycleDelegate.STARTED, presenter.status);
         assertEquals(FragmentLifecycleDelegate.STARTED, component.status);
 
         view.onResume();
@@ -53,10 +53,10 @@ public class FragmentLifecycleDelegateTest {
 
         view.onStop();
         assertEquals(FragmentLifecycleDelegate.STOPPED, component.status);
-        assertEquals(FragmentLifecycleDelegate.STOPPED, presenter.status);
 
         view.onDestroyView();
         assertEquals(FragmentLifecycleDelegate.VIEW_DESTROYED, component.status);
+        assertEquals(FragmentLifecycleDelegate.STOPPED, presenter.status);
 
         view.onDestroy();
         assertEquals(FragmentLifecycleDelegate.DESTROYED, component.status);
@@ -65,16 +65,16 @@ public class FragmentLifecycleDelegateTest {
     }
 
     @SuppressLint("ValidFragment")
-    private static class BaseContractFragmentImpl extends BaseContractFragment {
-        private BaseContract.Presenter presenter;
+    private static class VpFragmentImpl extends VpFragment<VpContract.View> {
+        private VpPresenter<VpContract.View> presenter;
 
-        void setPresenter(BaseContract.Presenter presenter) {
+        void setPresenter(VpPresenter<VpContract.View> presenter) {
             this.presenter = presenter;
         }
 
         @NonNull
         @Override
-        protected BaseContract.Presenter getPresenter() {
+        protected VpPresenter<VpContract.View> createPresenter() {
             return presenter;
         }
     }
@@ -117,12 +117,12 @@ public class FragmentLifecycleDelegateTest {
 
     }
 
-    private static class MvplcPresenterImpl implements BaseContract.Presenter {
+    private static class MvplcPresenterImpl extends VpPresenter<VpContract.View> implements VpContract.Presenter<VpContract.View> {
         @FragmentLifecycleDelegate.FragmentLifecycleEvent int status;
         public MvplcPresenterImpl(){};
 
         @Override
-        public void onStart() {
+        public void onStart(VpContract.View view) {
             status = FragmentLifecycleDelegate.STARTED;
         }
 

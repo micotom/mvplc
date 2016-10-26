@@ -1,21 +1,18 @@
 package com.bragi.mvplcapp.mvp.carbrandDetail;
 
-import android.support.annotation.Nullable;
-
+import com.bragi.mvplc.components.VpPresenter;
 import com.bragi.mvplcapp.data.DataStore;
 import com.bragi.mvplcapp.data.entities.CarBrand;
 
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter {
+class CarBrandDetailPresenter extends VpPresenter<CarBrandDetailContract.View> implements CarBrandDetailContract.Presenter {
     private final long carBrandId;
     private final DataStore dataStore;
 
     private CarBrandDetailContract.View view;
 
-    @Nullable
-    private Subscription dataStoreSubscription;
+    private boolean isLoading = false;
 
     CarBrandDetailPresenter(long carBrandId, DataStore dataStore) {
         this.carBrandId = carBrandId;
@@ -30,28 +27,27 @@ class CarBrandDetailPresenter implements CarBrandDetailContract.Presenter {
 
     @Override
     public void onStop() {
-        cleanupSubscription();
+        // do nothing
     }
 
     private void reload() {
         view.showProgress();
 
-        if (dataStoreSubscription == null) {
-            dataStoreSubscription = dataStore.requestCarBrand(carBrandId)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::foundCarBrandDetail);
+        if (isLoading) {
+            return;
         }
+        isLoading = true;
+
+        addSubscription(dataStore.requestCarBrand(carBrandId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::foundCarBrandDetail)
+        );
     }
 
     private void foundCarBrandDetail(CarBrand carBrandDetail) {
+        isLoading = false;
+
         view.setCarBrand(new CarBrandDetailDisplayModel(carBrandDetail));
         view.hideProgress();
-    }
-
-    private void cleanupSubscription() {
-        if (dataStoreSubscription != null && !dataStoreSubscription.isUnsubscribed()) {
-            dataStoreSubscription.unsubscribe();
-        }
-        dataStoreSubscription = null;
     }
 }

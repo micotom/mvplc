@@ -1,7 +1,6 @@
 package com.bragi.mvplcapp.mvp.carbrands;
 
-import android.support.annotation.Nullable;
-
+import com.bragi.mvplc.components.VpPresenter;
 import com.bragi.mvplcapp.data.DataStore;
 import com.bragi.mvplcapp.data.entities.CarBrand;
 import com.bragi.mvplcapp.utils.Navigator;
@@ -9,17 +8,15 @@ import com.bragi.mvplcapp.utils.Navigator;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-class CarBrandsPresenter implements CarBrandsContract.Presenter {
+class CarBrandsPresenter extends VpPresenter<CarBrandsContract.View> implements CarBrandsContract.Presenter {
     private final DataStore dataStore;
     private final Navigator navigator;
 
     private CarBrandsContract.View view;
 
-    @Nullable
-    private Subscription dataStoreSubscription;
+    private boolean isLoading = false;
 
     CarBrandsPresenter(DataStore dataStore, Navigator navigator) {
         this.dataStore = dataStore;
@@ -34,7 +31,7 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
 
     @Override
     public void onStop() {
-        cleanupSubscription();
+        // do nothing
     }
 
     @Override
@@ -51,15 +48,19 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
         view.showProgress();
         view.clearCarBrands();
 
-        if (dataStoreSubscription == null) {
-            dataStoreSubscription = dataStore.requestCarBrands()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::foundCarBrands);
+        if (isLoading) {
+            return;
         }
+        isLoading = true;
+
+        addSubscription(dataStore.requestCarBrands()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::foundCarBrands)
+        );
     }
 
     private void foundCarBrands(List<CarBrand> carBrands) {
-        cleanupSubscription();
+        isLoading = false;
 
         // Transform to display data
         Observable.from(carBrands)
@@ -67,12 +68,5 @@ class CarBrandsPresenter implements CarBrandsContract.Presenter {
                 .toList()
                 .subscribe(view::setCarBrands);
         view.hideProgress();
-    }
-
-    private void cleanupSubscription() {
-        if (dataStoreSubscription != null && !dataStoreSubscription.isUnsubscribed()) {
-            dataStoreSubscription.unsubscribe();
-        }
-        dataStoreSubscription = null;
     }
 }

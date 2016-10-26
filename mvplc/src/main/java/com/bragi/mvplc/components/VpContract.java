@@ -1,6 +1,6 @@
 package com.bragi.mvplc.components;
 
-public interface BaseContract {
+public interface VpContract {
 
     interface View {}
 

@@ -9,11 +9,11 @@ import android.view.View;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public abstract class BaseContractFragment<V extends BaseContract.View, P extends BaseContract.Presenter<V>>
-        extends Fragment implements BaseContract.View {
+public abstract class VpFragment<V extends VpContract.View>
+        extends Fragment implements VpContract.View {
 
     private final Subject<Integer, Integer> lifecycleSubject = PublishSubject.create();
-    private P basePresenter;
+    private VpPresenter<V> basePresenter;
 
     @Override
     public final void onCreate (Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public abstract class BaseContractFragment<V extends BaseContract.View, P extend
     @Override
     public final void onDestroyView() {
         lifecycleSubject.onNext(FragmentLifecycleDelegate.VIEW_DESTROYED);
+        basePresenter.cleanupSubscriptions();
         basePresenter.onStop();
         basePresenter = null;
         onFragmentViewDestroyed();
@@ -78,7 +79,7 @@ public abstract class BaseContractFragment<V extends BaseContract.View, P extend
         super.onDestroy();
     }
 
-    protected final void attachLifecycleComponent(FragmentLifecycleDelegate component) {
+    protected final void attachLifecycleDelegate(FragmentLifecycleDelegate component) {
         component.attach(lifecycleSubject.asObservable());
     }
 
@@ -86,7 +87,7 @@ public abstract class BaseContractFragment<V extends BaseContract.View, P extend
 
     // Mandatory
     @NonNull
-    protected abstract P createPresenter();
+    protected abstract VpPresenter<V> createPresenter();
 
     // Optional methods
     protected void onFragmentCreated(Bundle savedInstanceState) { /* default implementation */ }

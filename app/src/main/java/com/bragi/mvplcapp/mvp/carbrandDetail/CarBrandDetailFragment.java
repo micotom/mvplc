@@ -11,7 +11,8 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.bragi.mvplc.components.BaseContractFragment;
+import com.bragi.mvplc.components.VpFragment;
+import com.bragi.mvplc.components.VpPresenter;
 import com.bragi.mvplcapp.R;
 import com.bragi.mvplcapp.utils.Injector;
 import com.squareup.picasso.Picasso;
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailContract.View, CarBrandDetailContract.Presenter>
+public class CarBrandDetailFragment extends VpFragment<CarBrandDetailContract.View>
         implements CarBrandDetailContract.View {
 
     private static final String ARG_SELECTED_CARBRAND_ID = "selected_carbrand_id";
@@ -45,9 +46,11 @@ public class CarBrandDetailFragment extends BaseContractFragment<CarBrandDetailC
 
     @NonNull
     @Override
-    protected CarBrandDetailContract.Presenter createPresenter() {
-        return new CarBrandDetailPresenter(getArguments().getLong(ARG_SELECTED_CARBRAND_ID, -1),
-                Injector.INSTANCE.provideDataStore());
+    protected VpPresenter<CarBrandDetailContract.View> createPresenter() {
+        return new CarBrandDetailPresenter(
+                getArguments().getLong(ARG_SELECTED_CARBRAND_ID, -1),
+                Injector.INSTANCE.provideDataStore()
+        );
     }
 
     @Nullable

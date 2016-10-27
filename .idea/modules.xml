@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MvplcArchitecture.iml" filepath="$PROJECT_DIR$/MvplcArchitecture.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvplc/mvplc.iml" filepath="$PROJECT_DIR$/mvplc/mvplc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvplcrepo.iml" filepath="$PROJECT_DIR$/mvplcrepo.iml" />
     </modules>
   </component>
 </project>
